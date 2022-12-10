@@ -1,0 +1,9 @@
+wasm/target
+node_modules
+wasm/pkg
+
+/dist
+/docs
+
+.DS_Store
+.vscode
