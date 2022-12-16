@@ -7,7 +7,9 @@ module.exports = (env, argv) => {
   const distPath = path.resolve(__dirname, isProd ? "docs" : "dist");
   return {
     devServer: {
-      contentBase: distPath,
+      static: {
+        directory: path.join(__dirname, "public"),
+      },
       compress: isProd,
       port: 8000,
     },
