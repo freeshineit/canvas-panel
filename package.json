@@ -16,7 +16,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@wasm-tool/wasm-pack-plugin": "^1.6.0",
     "copy-webpack-plugin": "^6.2.0",
     "css-loader": "^4.3.0",
     "sass": "^1.26.11",
@@ -25,7 +24,6 @@
     "ts-loader": "8.4.0",
     "typescript": "^4.6.4",
     "url-loader": "^4.1.1",
-    "wasm-pack": "^0.10.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
