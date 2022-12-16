@@ -10,11 +10,16 @@ interface Options {
   translateY?: number;
 }
 
+/**
+ * Canvas 画板
+ */
 class CanvasPanel {
   options: Options & CanvasPanelOptions;
   canvas: null | HTMLCanvasElement = null;
   dragFlag = false;
   ctx: null | CanvasRenderingContext2D = null;
+
+  private dpr = 2;
 
   constructor(options: CanvasPanelOptions = {}) {
     this.options = {
@@ -30,12 +35,15 @@ class CanvasPanel {
     this.createCanvas();
   }
 
+  /**
+   * 创建画布
+   */
   createCanvas() {
     const canvasEle = document.createElement("canvas");
     const divEle = document.createElement("div");
 
-    canvasEle.style.width = this.options?.width / 2 + "px";
-    canvasEle.style.height = this.options?.height / 2 + "px";
+    canvasEle.style.width = this.options?.width / this.dpr + "px";
+    canvasEle.style.height = this.options?.height / this.dpr + "px";
     canvasEle.width = this.options.width;
     canvasEle.height = this.options.height;
 
@@ -52,9 +60,7 @@ class CanvasPanel {
       // console.log(`x: ${x}, y: ${y}`)
 
       function onMouseMove(e: MouseEvent) {
-        console.log(e.clientX, e.clientY);
         const { mX, mY } = { mX: e.clientX, mY: e.clientY };
-        // console.log(`mX: ${mX}, mY: ${mY}`)
         _this.drag(mX - x, mY - y);
         x = mX;
         y = mY;
@@ -63,7 +69,7 @@ class CanvasPanel {
       function onMouseUp(e?: MouseEvent) {
         _this.dragFlag = false;
         canvasEle.style.cursor = "default";
-        console.log("CanvasPanel.dragFlag", this.dragFlag);
+        console.log("CanvasPanel.dragFlag", _this.dragFlag);
         canvasEle.removeEventListener("mousemove", onMouseMove);
         canvasEle.removeEventListener("mouseup", onMouseUp);
       }
@@ -101,32 +107,48 @@ class CanvasPanel {
         let z = e.deltaY > 0 ? -0.1 : 0.1;
         // console.log(`e.offsetX: ${e.offsetX}, e.offsetY: ${e.offsetY}, e.deltaY: ${e.deltaY}`)
         _this.zoom(e.offsetX, e.offsetY, z);
+
+        document.getElementById(
+          "zoom"
+        ).innerHTML = `zoom: ${this.options.curZoom}`;
       },
       false
     );
 
     this.canvas.addEventListener("mousemove", (e: MouseEvent) => {
+      document.getElementById("x").innerHTML = `x: ${e.offsetX}, `;
+      document.getElementById("y").innerHTML = `y: ${e.offsetY}, `;
       document.getElementById(
-        "text"
-      ).innerHTML = `x: ${e.offsetX}, y: ${e.offsetY}`;
+        "zoom"
+      ).innerHTML = `zoom: ${this.options.curZoom}`;
     });
 
     this.preventDefault();
   }
 
   draw() {
+    this.ctx.fillStyle = "black";
     this.ctx.fillRect(
-      (this.options.width - 100) / 2,
-      (this.options.height - 100) / 2,
+      (this.options.width - 100) / this.dpr,
+      (this.options.height - 100) / this.dpr,
       100,
       100
     );
-  }
 
+    this.ctx.fillStyle = "red";
+    this.ctx.fillRect(
+      (this.options.width - 2) / this.dpr,
+      (this.options.height - 2) / this.dpr,
+      2,
+      2
+    );
+  }
   /**
-   *
    * 滚轮缩放
-   *
+   * @param offsetX 相对画布上鼠标的X轴
+   * @param offsetY 相对画布上鼠标的Y轴
+   * @param z 本次缩放的倍数（0.1/-0.1）
+   * @returns
    */
   zoom(offsetX: number, offsetY: number, z: number) {
     this.options.curZoom = this.options.fontZoom + z;
@@ -138,20 +160,27 @@ class CanvasPanel {
     }
     this.ctx.save();
     this.ctx.clearRect(0, 0, this.options.width, this.options.height);
-    // 目标坐标=事件坐标+(图形坐标−事件坐标)×缩放倍数
-    // this.options.translateX = (this.options.translateX - (offsetX * 2 * z))
-    // this.options.translateY = (this.options.translateY - (offsetY * 2 * z))
 
-    this.options.translateX = -(offsetX * 2) * (this.options.curZoom - 1);
-    this.options.translateY = -(offsetY * 2) * (this.options.curZoom - 1);
-    // this.options.translateX = - (-(this.options.translateX - offsetX * 2 * z))
-    // this.options.translateY = - (-(this.options.translateY - offsetY * 2 * z))
-
-    console.log(
-      `offsetX: ${offsetX}, offsetY: ${offsetY}, \ntranslateX: ${this.options.translateX}, translateY: ${this.options.translateY}, curZoom: ${this.options.curZoom}, z: ${z}`
-    );
-
-    // this.ctx.fillRect(offsetX * 2, offsetY * 2, 5, 5)
+    // if (this.options.curZoom <= 1) {
+    //   // 中心缩放
+    //   this.options.translateX =
+    //     this.options.translateX - (this.options.width / this.dpr) * z;
+    //   this.options.translateY =
+    //     this.options.translateY - (this.options.height / this.dpr) * z;
+    // } else {
+    // 最重要的是计算当前鼠标对应画布的真实位置
+    // 偏移量加上鼠标位置除以上一次缩放的倍数（鼠标真实的位置）(-translateX + offsetX * dpr) / fontZoom
+    this.options.translateX =
+      this.options.translateX -
+      ((-this.options.translateX + offsetX * this.dpr) /
+        this.options.fontZoom) *
+        z;
+    this.options.translateY =
+      this.options.translateY -
+      ((-this.options.translateY + offsetY * this.dpr) /
+        this.options.fontZoom) *
+        z;
+    // }
     // 平移到鼠标当前点位置没有变化
     this.ctx.translate(this.options.translateX, this.options.translateY);
     // 默认缩放圆心 (0,0)
@@ -173,32 +202,15 @@ class CanvasPanel {
     this.options.translateY = 0;
   }
   /**
-   *
    * 平移
-   *
+   * @param offsetX 鼠标X轴移动的差值
+   * @param offsetY 鼠标Y轴移动的差值
    */
   drag(offsetX: number, offsetY: number) {
-    // console.log(this.dragFlag, this.curZoom)
     if (this.dragFlag) {
-      console.log(
-        "1: offsetX",
-        offsetX,
-        "offsetY",
-        offsetY,
-        this.options.translateX,
-        this.options.translateY
-      );
       // 不用乘缩放倍数
-      this.options.translateX = this.options.translateX + offsetX * 2; // 因为是两倍
-      this.options.translateY = this.options.translateY + offsetY * 2;
-      console.log(
-        "2: offsetX",
-        offsetX,
-        "offsetY",
-        offsetY,
-        this.options.translateX,
-        this.options.translateY
-      );
+      this.options.translateX = this.options.translateX + offsetX * this.dpr; // // 因为dpr
+      this.options.translateY = this.options.translateY + offsetY * this.dpr;
 
       this.ctx.save();
       this.ctx.clearRect(0, 0, this.options.width, this.options.height);
@@ -208,6 +220,7 @@ class CanvasPanel {
       this.ctx.restore();
     }
   }
+  //
   preventDefault() {
     document.body.addEventListener("DOMMouseScroll", function (e) {
       e.preventDefault();
@@ -217,7 +230,6 @@ class CanvasPanel {
       (e) => {
         e.stopPropagation();
         e.preventDefault();
-        // console.log('document.getElementsByTagName(body)')
       },
       { passive: false }
     );

@@ -8,12 +8,27 @@
     <meta name="viewport"
         content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <title>Canvas Panel</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        #text {
+            user-select: none;
+        }
+    </style>
 </head>
 
 <body>
 
     <body>
-        <div id="text" style="color: #fff; font-size: 20px; text-align: center"></div>
+        <div id="text" style="color: #fff; font-size: 20px; text-align: center">
+            <span id="x"></span>
+            <span id="y"></span>
+            <span id="zoom"></span>
+        </div>
         <div class="box" id="CanvasBox">
         </div>
     </body>
