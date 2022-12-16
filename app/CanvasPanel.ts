@@ -154,7 +154,7 @@ class CanvasPanel {
     this.options.curZoom = this.options.fontZoom + z;
 
     // curZoom 为负值时会发生翻转
-    if (this.options.curZoom <= 0) {
+    if (this.options.curZoom <= 0.3) {
       this.options.curZoom = this.options.fontZoom;
       return;
     }
