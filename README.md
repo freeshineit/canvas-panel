@@ -15,6 +15,6 @@ yarn run build
 
 # https://github.com/http-party/http-server
 # http-server >= 14
-cd dist && http-server -p 8080
+cd docs && http-server -p 8080 .
 
 ```
