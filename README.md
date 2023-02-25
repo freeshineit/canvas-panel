@@ -1,5 +1,7 @@
 # Canvas Panel
 
+![build](https://github.com/freeshineit/canvas-panel/workflows/build/badge.svg)
+
 Canvas 画板Demo, 支持拖拽和滚轮缩放
 ## Use
 
