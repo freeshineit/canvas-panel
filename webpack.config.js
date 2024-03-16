@@ -48,7 +48,6 @@ module.exports = (env, argv) => {
       //   // extraArgs: ""
       // })
     ],
-    watch: argv.mode !== "production",
     resolve: {
       // A little overkill for our tutorial but useful.
       extensions: [".ts", ".tsx", ".js", ".jsx", ".mts", ".mjs"],
