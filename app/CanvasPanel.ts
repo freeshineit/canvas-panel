@@ -72,6 +72,7 @@ class CanvasPanel {
         console.log("CanvasPanel.dragFlag", _this.dragFlag);
         canvasEle.removeEventListener("mousemove", onMouseMove);
         canvasEle.removeEventListener("mouseup", onMouseUp);
+        canvasEle.removeEventListener("mouseleave", onMouseLeave);
       }
 
       function onMouseLeave(e: MouseEvent) {
