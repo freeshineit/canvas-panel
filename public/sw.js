@@ -1,11 +1,11 @@
 importScripts("./service-worker.js");
 var cacheStorageKey = "190pwa";
-var cacheList = ["/", "index.html", "main.css", "logo.png"];
+var cacheList = ["/", "./demo.html", "./main.css", "./logo.png"];
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches
       .open(cacheStorageKey)
-      .then((cache) => cache.addAll(cacheList))
+      .then((cache) => cache?.addAll?.(cacheList))
       .then(() => self.skipWaiting())
   );
 });
