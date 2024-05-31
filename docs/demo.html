@@ -46,6 +46,10 @@
       .then(function (registartion) {
         console.log('支持sw:', registartion.scope)
         showNotification()
+
+        setInterval(() => {
+          showNotification()
+        }, 5000)
       })
 
   } else {
