@@ -26,6 +26,7 @@
   if (navigator.serviceWorker != null) {
 
     function showNotification() {
+      console.log("showNotification")
       Notification.requestPermission().then((result) => {
         if (result === "granted") {
           navigator.serviceWorker.ready.then((registration) => {
@@ -37,6 +38,7 @@
             });
           });
         }
+        console.log("showNotification result", result)
       });
     }
 
