@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <h3>Hello 这是一个可以安装到桌面的网页</h3>
+  <h3 onclick="showNotification()">Hello 这是一个可以安装到桌面的网页</h3>
   <div id="installContainer">
     用谷歌浏览器打开，看一下地址栏后面有一个安装的图标，安装一下试试吧
   </div>
@@ -24,26 +24,27 @@
 <script>
   // 检测浏览器是否支持SW
   if (navigator.serviceWorker != null) {
+
+    function showNotification() {
+      Notification.requestPermission().then((result) => {
+        if (result === "granted") {
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification("Vibration Sample", {
+              body: "Buzz! Buzz!",
+              icon: "./logo.png",
+              vibrate: [200, 100, 200, 100, 200, 100, 200],
+              tag: "vibration-sample",
+            });
+          });
+        }
+      });
+    }
+
     navigator.serviceWorker.register('./sw.js')
       .then(function (registartion) {
         console.log('支持sw:', registartion.scope)
+        showNotification()
       })
-
-    // function showNotification() {
-    Notification.requestPermission().then((result) => {
-      if (result === "granted") {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.showNotification("Vibration Sample", {
-            body: "Buzz! Buzz!",
-            icon: "../images/touch/chrome-touch-icon-192x192.png",
-            vibrate: [200, 100, 200, 100, 200, 100, 200],
-            tag: "vibration-sample",
-          });
-        });
-      }
-    });
-    // }
-
 
   } else {
     console.log('不支持SW:')
